@@ -1,5 +1,5 @@
 import os
-import tgi
+import ICA
 
 imgOut = 'test/testImage_ica.tif'
 imgIn = 'test/testImage.tif'
@@ -21,8 +21,7 @@ def test_ica():
     ica=None
 
 
-def test_main():
-    if os.path.exists(imgOut):
-        os.remove(imgOut)
-    tgi.main(ica.ICA(imgIn, imgOut, n_bands=3, ot=ot, whiten=True)
-    assert os.path.exists(imgOut)
+def test_parse_args():
+    args=['-i', 'test/testImage.tif', '-o', 'test/testImage_ica.tif', '-b', 3, -ft 'float16']
+    arguments = tgi.parse_args(args)
+    assert arguments.input == 'inputImage.tif'

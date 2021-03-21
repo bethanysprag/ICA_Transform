@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 import numpy as np
 
 # check if gdal is installed
@@ -17,6 +18,37 @@ except:
 #import matplotlib.pyplot as plt
 from scipy import signal
 from sklearn.decomposition import FastICA, PCA
+
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+
+# <imgIn> <imgOut> <n_bands> <outType>
+def parse_args(args):
+    """ Parse arguments for the ICA Transformation """
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-i',
+                        '--input',
+                        help='Input image',
+                        required=True)
+    parser.add_argument('-b',
+                        '--bands',
+                        help='Number of output transform bands',
+                        default=3,
+                        nargs=1,
+                        type=int)
+
+    parser.add_argument('-o',
+                        '--outfile',
+                        required=True,
+                        help='Output Filename')
+    parser.add_argument('-ft',
+                        '-filetype',
+                        required=False,
+                        help='Output Filetype, default=float16')
+    h = '0: Quiet, 1: Debug, 2: Info, 3: Warn, 4: Error, 5: Critical'
+    parser.add_argument('--verbose', help=h, default=2, type=int)
+    return parser.parse_args(args)
 
 
 def ICA(imgIn, imgOut, n_bands=3, ot='float16', whiten=None):
@@ -130,21 +162,18 @@ def usage():
     print("Usage: " + sys.argv[0] + "<imgIn> <imgOut> <n_bands> <outType>\n")
     sys.exit(1)
 
-if __name__ == "__main__":
-    imgIn = None
-    imgOut = None
-    n_bands = None
-    ot = None
+def cli():
+    logger.info('Calculating Triangular Greeness using CLI commands')
+    args = parse_args(sys.argv[1:])
+    imgIn = args.input
+    imgOut = args.outfile
+    n_bands = args.bands
+    ot = args.ft
+    logger.setLevel(args.verbose * 10)
 
-    if 5 != len(sys.argv):
-        usage()
-
-    imgIn = sys.argv[1]
-    imgOut = sys.argv[2]
-    n_bands = int(sys.argv[3])
-    ot = sys.argv[4]
-    # print n_bands
-    # if n_bands > 10:
-    #    print n_bands
-    #    sys.exit(1)
     result = ICA(imgIn, imgOut, n_bands=n_bands, ot=ot, whiten=True)
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    cli()

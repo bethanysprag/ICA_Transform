@@ -3,6 +3,7 @@ import sys
 import argparse
 import numpy as np
 
+
 # check if gdal is installed
 try:
     import gdal
@@ -15,7 +16,7 @@ except:
         print 'Error: gdal not installed on this machine'
         exit
 
-#import matplotlib.pyplot as plt
+
 from scipy import signal
 from sklearn.decomposition import FastICA, PCA
 
@@ -23,7 +24,7 @@ from sklearn.decomposition import FastICA, PCA
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
-# <imgIn> <imgOut> <n_bands> <outType>
+
 def parse_args(args):
     """ Parse arguments for the ICA Transformation """
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -157,10 +158,6 @@ def saveArrayAsRaster(rasterfn, newRasterfn, array):
     outRaster.SetProjection(outRasterSRS.ExportToWkt())
     outband.FlushCache()
 
-
-def usage():
-    print("Usage: " + sys.argv[0] + "<imgIn> <imgOut> <n_bands> <outType>\n")
-    sys.exit(1)
 
 def cli():
     logger.info('Calculating Triangular Greeness using CLI commands')

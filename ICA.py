@@ -2,21 +2,10 @@ import os
 import sys
 import argparse
 import numpy as np
-
-
-# check if gdal is installed
-try:
-    import gdal
-    import ogr
-    import osr
-except:
-    try:
-        from osgeo import gdal, ogr, osr
-    except:
-        print 'Error: gdal not installed on this machine'
-        exit
-
-
+import logging
+import gdal
+import ogr
+import osr
 from scipy import signal
 from sklearn.decomposition import FastICA, PCA
 
@@ -53,6 +42,7 @@ def parse_args(args):
 
 
 def ICA(imgIn, imgOut, n_bands=3, ot='float16', whiten=None):
+    """ Performs Independent Component analysis on a tif format image """
     img = readImage(imgIn)
     x, y, z = img.shape
     test = np.reshape(img, ((x * y), z))
@@ -72,12 +62,14 @@ def ICA(imgIn, imgOut, n_bands=3, ot='float16', whiten=None):
         outImg_rs = resample16bit(outImg)
         rs = 1
     if rs != 1:
-        print 'outType %s not recognized by program' % (ot)
+        logging.info('outType %s not recognized by program' % (ot))
         outImg_rs = outImg.astype(ot)
     saveArrayAsRaster(imgIn, imgOut, outImg_rs)
 
 
 def resample16bit(img):
+    """ Resamples img to 16-bit datatype """
+    logging.info('resampling img to 16-bit')
     imgMin = img.min()
     offset = (0-imgMin)
     img = img + offset
@@ -87,6 +79,8 @@ def resample16bit(img):
 
 
 def Atebit(img):
+    """ Resamples input img to 8-bit datatype """
+    logging.info('resampling img to 8-bit')
     imgMin = img.min()
     offset = (0-imgMin)
     img = img + offset
@@ -96,6 +90,8 @@ def Atebit(img):
 
 
 def readImage(imgPath):
+    """ Reads input image to numpy array """
+    logging.info('Reading img: %s' % imgPath)
     i1_src = gdal.Open(imgPath)
     i1 = i1_src.ReadAsArray()
     if i1.ndim > 2:
@@ -105,6 +101,8 @@ def readImage(imgPath):
 
 
 def saveArrayAsRaster(rasterfn, newRasterfn, array):
+    """ Saves numpy array to geotiff """
+    logging.info('Saving output img as %s' % newRasterfn)
     raster = gdal.Open(rasterfn)
     # nBands = raster.count
     checksum = array.ndim
@@ -160,14 +158,14 @@ def saveArrayAsRaster(rasterfn, newRasterfn, array):
 
 
 def cli():
-    logger.info('Calculating Triangular Greeness using CLI commands')
+    """ Performs Independent Component Analysis using CLI commands """
+    logger.info('Performing ICA using CLI commands')
     args = parse_args(sys.argv[1:])
     imgIn = args.input
     imgOut = args.outfile
     n_bands = args.bands
     ot = args.ft
     logger.setLevel(args.verbose * 10)
-
     result = ICA(imgIn, imgOut, n_bands=n_bands, ot=ot, whiten=True)
     sys.exit(0)
 

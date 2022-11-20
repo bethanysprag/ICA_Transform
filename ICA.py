@@ -166,7 +166,7 @@ def cli():
     n_bands = args.bands
     ot = args.ft
     logger.setLevel(args.verbose * 10)
-    result = ICA(imgIn, imgOut, n_bands=n_bands, ot=ot, whiten=True)
+    ICA(imgIn, imgOut, n_bands=n_bands, ot=ot, whiten=True)
     sys.exit(0)
 
 

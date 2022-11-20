@@ -5,7 +5,7 @@ services:
   bash:
     build:
       context: .
-    image: bethanysprag/ICA_Transformation:latest
+    image: ica:latest
     entrypoint: /bin/bash
     working_dir: /work
     volumes:
@@ -14,7 +14,7 @@ services:
   test:
     build:
       context: .
-    image: bethanysprag/ICA_Transformation:latest
+    image: ica:latest
     command: bash -c 'nosetests -v -s'
     working_dir: /work
     volumes:

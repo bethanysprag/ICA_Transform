@@ -26,6 +26,7 @@ arguments:
 
 ### Docker
 A Dockerfile and a docker-compose.yml are included for ease of development. The built docker image provides all the system dependencies needed to run the library. The library can also be tested locally, but all system dependencies must be installed first, and the use of a virtualenv is recommended.
+Docker-compose v1 is currently deprecated and v2 is recommended (https://www.docker.com/blog/announcing-compose-v2-general-availability). tldr: V1 is the only version available by pip but v2 comes included in Docker Desktop.
 
 To build the docker image use the included docker-compose tasks:
 

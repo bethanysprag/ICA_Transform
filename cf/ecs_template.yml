@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS task definition and task iam role
+Resources:
+  ECSRoleICA:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Principal:
+                  Service:
+                    - ec2.amazonaws.com
+              Action:
+                - sts:AssumeRole
+      Description: !Sub "IAM Role for ${AWS::StackName}"
+      Path: '/'
+      Policies:
+        - PolicyName: ecs-ica
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                  - ecr:*
+                  - ecs:*
+                  - s3:*
+                  - CloudWatchEventsFullAccess:*
+                  - events:*
+                  - ssm:*
+                Resource: '*'
+  EcsICA:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ExecutionRoleArn: 'arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecsTaskExecutionRole'
+      ContainerDefinitions:
+        -
+          LogConfiguration:
+            LogDriver: awslogs
+            options:
+              awslogs-group: /ecs/ica
+              awslogs-region: $DEFAULT_REGION
+              awslogs-stream-prefix: ecs
+          PortMappings: []
+          cpu: 0
+          environment: []
+          memoryReservation: 30000
+          volumesFrom: []
+          image: '${AWS_ACCOUNT_ID}.dkr.ecr.${DEFAULT_REGION}.amazonaws.com/ica:latest'
+          name: ica
+      PlacementConstraints: []
+      Memory: '30720'
+      TaskRoleArn: 'arn:aws:iam::${AWS_ACCOUNT_ID}:role/ecs-ica'
+      TaskDefinitionArn: 'arn:aws:ecs:${DEFAULT_REGION}:${AWS_ACCOUNT_ID}:task-definition/ica:1'
+      Family: ica
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: '4096'

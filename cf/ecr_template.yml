@@ -1,0 +1,7 @@
+Resources:
+  EcrRepo:
+    Type: AWS::ECR::Repository
+    Properties:
+      EncryptionConfiguration:
+         EncryptionType: AES256
+      RepositoryName: ica

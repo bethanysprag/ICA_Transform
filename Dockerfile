@@ -12,6 +12,8 @@ RUN apt-get update && \
     apt-get install -y zip nano
 COPY requirements.txt /work/requirements.txt
 COPY requirements-dev.txt /work/requirements-dev.txt
+RUN apt-get install -y awscli
+RUN pip3 install --upgrade awscli
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r requirements-dev.txt

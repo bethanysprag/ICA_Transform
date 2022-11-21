@@ -15,7 +15,7 @@ phases:
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
       - echo Building the Docker image...
       - docker build . -t ica:latest
-      - echo "getting AWS creds from SecretsManager (Only used in docker test not docker build"
+      - echo "getting AWS creds from SecretsManager (Only used in docker test not docker build)"
       - . ./scripts/set_aws_keys.sh
       - echo Testing the docker image
       - docker run --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY --env AWS_SECRET_KEY=$AWS_SECRET_KEY ica:latest bash -c '. ./ecs/test/run_test.sh'

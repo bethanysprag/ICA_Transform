@@ -8,6 +8,6 @@ else
 fi
 cd /work/ICA
 # . /work/scripts/test_environment.sh
-nosetests --with-coverage --cover-package main -v -s
+nosetests --with-coverage --cover-package ICA -v -s
 #cd /work
 # . /work/scripts/test_cleanup.sh

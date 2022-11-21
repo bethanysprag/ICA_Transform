@@ -1,4 +1,6 @@
-FROM ubuntu:focal
+ARG AWS_ACCOUNT_ID
+ENV AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+FROM {$AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ubuntu_focal
 MAINTAINER 'Bethany Sprague bethanysprag@gmail.com'
 ENV DEBIAN_FRONTEND='noninteractive'
 WORKDIR /work

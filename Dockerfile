@@ -1,6 +1,6 @@
-ARG AWS_ACCOUNT_ID
-ENV AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
-FROM {$AWS_ACCOUNT_ID}.dkr.ecr.us-east-1.amazonaws.com/ubuntu_focal
+ARG AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+ARG AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/ubuntu_focal
 MAINTAINER 'Bethany Sprague bethanysprag@gmail.com'
 ENV DEBIAN_FRONTEND='noninteractive'
 WORKDIR /work

@@ -13,7 +13,7 @@ logging.basicConfig()
 logging.root.setLevel(20)
 
 
-def get_secret(secret_name='breakline-worker-access-key',region_name='us-east-2'):
+def get_secret(secret_name=None,region_name='us-east-1'):
     # Create a Secrets Manager client
     session = boto3.session.Session()
     client = session.client(
@@ -62,10 +62,10 @@ def get_secret(secret_name='breakline-worker-access-key',region_name='us-east-2'
 
 
 def main():
-    #get breakline-user creds from secret manager
-    secrets = get_secret()
-    # log into boto3 using user creds instead of assuming role.  This is
-    # necessary in order to have presigned urls that extend longer than 36 hours
+    #get ica-test-user creds from secret manager
+    secret_name=os.environ['secretname']
+    region = os.environ['AWS_DEFAULT_REGION']
+    secrets = get_secret(secret_name=secret_name,region_name=region)
     ACCESS_KEY = secrets['Access key ID']
     SECRET_KEY = secrets['Secret access key']
     os.environ['ACCESS_KEY'] = ACCESS_KEY

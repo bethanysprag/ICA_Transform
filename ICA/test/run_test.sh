@@ -6,7 +6,7 @@ if [ "$local" = 'True' ]; then
 else
   echo 'running test in ecs container mode'
 fi
-cd /work
+cd /ICA
 # . /work/scripts/test_environment.sh
 nosetests --with-coverage --cover-package main -v -s
 #cd /work

@@ -13,6 +13,22 @@ logging.basicConfig()
 logging.root.setLevel(20)
 
 
+def get_secret_arn_from_cf(key='ICATestServiceUserAccessKeySecretArn',stackname='ICA-Test-User'):
+    import boto3
+    cf_client = boto3.client('cloudformation')
+    response = cf_client.describe_stacks(StackName=stackname)
+    outputs = response["Stacks"][0]["Outputs"]
+    arn = None
+    for output in outputs:
+        keyName = output["OutputKey"]
+        if keyName == key:
+            arn = output["OutputValue"]
+    if arn is None:
+        logging.error('Unable to retrieve arn for key:%s and stack:%s' % (key,stackname))
+    os.environ['secretname'] = arn
+    return arn
+
+
 def get_secret(secret_name=None,region_name='us-east-1'):
     # Create a Secrets Manager client
     session = boto3.session.Session()
@@ -20,11 +36,6 @@ def get_secret(secret_name=None,region_name='us-east-1'):
         service_name='secretsmanager',
         region_name=region_name
     )
-
-    # In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
-    # See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-    # We rethrow the exception by default.
-
     try:
         get_secret_value_response = client.get_secret_value(
             SecretId=secret_name
@@ -57,17 +68,19 @@ def get_secret(secret_name=None,region_name='us-east-1'):
             secret = get_secret_value_response['SecretString']
         else:
             secret = base64.b64decode(get_secret_value_response['SecretBinary'])
-
     return json.loads(secret)
 
 
 def main():
     #get ica-test-user creds from secret manager
-    secret_name=os.environ['secretname']
+    try:
+        secret_name=os.environ['secretname']
+    except:
+        secret_name=get_secret_arn_from_cf()
     region = os.environ['AWS_DEFAULT_REGION']
     secrets = get_secret(secret_name=secret_name,region_name=region)
-    ACCESS_KEY = secrets['Access key ID']
-    SECRET_KEY = secrets['Secret access key']
+    ACCESS_KEY = secrets['aws_access_key_id']
+    SECRET_KEY = secrets['aws_secret_access_key']
     os.environ['ACCESS_KEY'] = ACCESS_KEY
     os.environ['SECRET_KEY'] = SECRET_KEY
     print('export AWS_ACCESS_KEY=%s export AWS_SECRET_KEY=%s' % (ACCESS_KEY,SECRET_KEY))

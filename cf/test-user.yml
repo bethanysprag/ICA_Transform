@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Stack for provisioning the AWS resources needed for
+  configuring a user for testing the ICA ECS task during CodeBuild
+  and storing access and secret keys in SecretsManager
+
+Resources:
+  ICATestServiceUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: 'ica-test-user'
+
+  ICATestPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: 'ICATestUserPolicy'
+      Users: 
+        - !Ref ICATestServiceUser
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:*
+              - ssm:*
+            Resource: '*'
+
+  ICATestServiceUserAccessKey:
+    Type: AWS::IAM::AccessKey
+    Properties:
+      UserName: !Ref ICATestServiceUser
+
+  ICATestServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - !Ref ICATestPolicy
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              AWS: !GetAtt ICATestServiceUser.Arn
+
+  ICATestServiceUserAccessKeySecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Description: !Sub "AWS credentials for the ${ICATestServiceUser} IAM user"
+      SecretString: !Sub >-
+        {
+          "aws_access_key_id":      "${ICATestServiceUserAccessKey}",
+          "aws_secret_access_key":  "${ICATestServiceUserAccessKey.SecretAccessKey}"
+        }
+
+Outputs:
+  ICATestServiceUser:
+    Value: !Ref ICATestServiceUser
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceUser"
+
+  ICATestServiceUserArn:
+    Value: !GetAtt ICATestServiceUser.Arn
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceUserArn"
+
+  ICATestServiceRole:
+    Value: !Ref ICATestServiceRole
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceRole"
+
+  ICATestServiceRoleArn:
+    Value: !GetAtt ICATestServiceRole.Arn
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceRoleArn"
+
+  ICATestServiceUserAccessKeySecret:
+    Value:  "ICAConfiguration" 
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceUserAccessKeySecret"
+
+  ICATestServiceUserAccessKeySecretArn:
+    Value: !Ref ICATestServiceUserAccessKeySecret
+    Export:
+      Name: !Sub "${AWS::Region}-${AWS::StackName}-ICATestServiceUserAccessKeySecretArn"

@@ -1,0 +1,104 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS task definition and task iam role
+Parameters:
+  AwsAcctId:
+    Description: AWS Account ID
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: ACCOUNT_ID
+  AwsRegion:
+    Description: AWS Default Region
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: DEFAULT_REGION
+    
+Resources:
+  ECSRoleICA:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: !Sub "IAM Role for ${AWS::StackName}"
+      Path: '/'
+      Policies:
+        - PolicyName: ecs-ica
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                  - ecr:*
+                  - ecs:*
+                  - s3:*
+                  - CloudWatchEventsFullAccess:*
+                  - events:*
+                  - ssm:*
+                Resource: '*'
+
+  EcsExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ecs-tasks.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Description: !Sub "IAM Role for ${AWS::StackName}"
+      Path: '/'
+      ManagedPolicyArns:
+        - 'arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy'
+
+  EcsICA:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ExecutionRoleArn: !Ref EcsExecRole
+      ContainerDefinitions:
+        -
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: /ecs/ica
+              awslogs-region: $DEFAULT_REGION
+              awslogs-stream-prefix: ecs
+          Cpu: 0
+          MemoryReservation: 30000
+          Image: !Sub '${AwsAcctId}.dkr.ecr.${AwsRegion}.amazonaws.com/ica:latest'
+          Name: ica
+      Memory: '30720'
+      TaskRoleArn: !Ref ECSRoleICA
+      TaskDefinitionArn: !Sub 'arn:aws:ecs:${AwsRegion}:${AwsAcctId}:task-definition/ica:1'
+      Family: ica
+      RequiresCompatibilities:
+        - FARGATE
+      NetworkMode: awsvpc
+      Cpu: '4096'
+
+Outputs:
+
+  EcsExecutionRoleArn:
+    Description: Arn for generic ecs execution role that will likely be reused
+    Value: !GetAtt EcsExecRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-ExecutionRoleArn'
+
+  EcsTaskRoleArn:
+    Description: Arn for task role
+    Value: !GetAtt EcsExecRole.Arn
+    Export:
+      Name: !Sub '${AWS::StackName}-TaskRoleArn'
+
+  TaskDefinitionArn:
+    Description: Arn for task definition
+    Value: !Ref EcsICA
+    Export:
+      Name: !Sub '${AWS::StackName}-TaskDefinitionArn'

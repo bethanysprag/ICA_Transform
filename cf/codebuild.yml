@@ -1,0 +1,83 @@
+Parameters:
+  GitHubUrl:
+    Type: String
+    Description: https://github.com/bethanysprag/ICA_Transform
+    Default: https://github.com/bethanysprag/ICA_Transform
+
+Resources:
+  CodeBuildRoleICA:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+            - Effect: Allow
+              Principal:
+                  Service:
+                    - codebuild.amazonaws.com
+              Action:
+                - sts:AssumeRole
+      Description: !Sub "IAM Role for ${AWS::StackName}"
+      Path: '/'
+      Policies:
+        - PolicyName: CodeBuild_ICA
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - cloudformation:*
+                  - codebuild:*
+                  - logs:*
+                  - ecr:*
+                  - ecs:*
+                  - iam:*
+                  - s3:*
+                  - CloudWatchEventsFullAccess:*
+                  - events:*
+                  - ssm:*
+                  - secretsmanager:*
+                Resource: '*'
+  ICA:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Description: CodeBuild for ICA
+      Triggers:
+        BuildType: BUILD
+        Webhook: True
+        FilterGroups:
+        - - Type: EVENT
+            Pattern: PUSH,PULL_REQUEST_MERGED
+          - Type: HEAD_REF
+            Pattern: ^refs/heads/development$
+            ExcludeMatchedPattern: false
+      ServiceRole: !GetAtt CodeBuildRoleICA.Arn
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: True
+        EnvironmentVariables:
+          - Name: AWS_DEFAULT_REGION
+            Value: DEFAULT_REGION
+            Type: PARAMETER_STORE
+          - Name: AWS_ACCOUNT_ID
+            Value: ACCOUNT_ID
+            Type: PARAMETER_STORE
+      Source:
+        Type: GITHUB
+        Location: !Ref GitHubUrl
+      TimeoutInMinutes: 10
+  CodeBuildLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/codebuild/${CodeBuildRoleICA}"
+      RetentionInDays: 7
+
+Outputs:
+  ProjectName:
+    Value: !Ref ICA
+    Description: CodeBuild project name
+

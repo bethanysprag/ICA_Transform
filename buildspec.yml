@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo pre_build complete
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building ecr repository
+      - ./scripts/ecr_create.sh
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+      - echo Creating test user
+      - . ./scripts/create_test_user.sh
+      - echo Building the Docker image...
+      - docker build . -t ica:latest --build-arg AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID --build-arg AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION 
+      - echo "getting AWS creds from SecretsManager" # Only used in docker test not docker build
+      - . ./scripts/set_aws_keys.sh
+      - echo Testing the docker image
+      - docker run --env AWS_ACCESS_KEY=$AWS_ACCESS_KEY --env AWS_SECRET_KEY=$AWS_SECRET_KEY --env local='True' ica:latest bash -c '. ./ICA/test/run_test.sh'
+      - docker tag ica:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ica:latest
+      - echo Building task definition
+      - ./scripts/ecs_create.sh
+
+  post_build:
+    commands:
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/ica:latest
+      - echo Build completed on `date`

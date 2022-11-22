@@ -1,4 +1,6 @@
-FROM ubuntu:focal
+ARG AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+ARG AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+FROM ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/ubuntu_focal
 MAINTAINER 'Bethany Sprague bethanysprag@gmail.com'
 ENV DEBIAN_FRONTEND='noninteractive'
 WORKDIR /work
@@ -10,6 +12,8 @@ RUN apt-get update && \
     apt-get install -y zip nano
 COPY requirements.txt /work/requirements.txt
 COPY requirements-dev.txt /work/requirements-dev.txt
+RUN apt-get install -y awscli
+RUN pip3 install --upgrade awscli
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r requirements-dev.txt

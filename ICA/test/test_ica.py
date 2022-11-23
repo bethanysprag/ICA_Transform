@@ -24,4 +24,4 @@ def test_ica():
 def test_parse_args():
     args=['-i', 'test/testImage.tif', '-o', 'test/testImage_ica.tif', '-b', '3', '-ft', 'float16']
     arguments = ICA.parse_args(args)
-    assert arguments.input == 'test/testImage.tif'
+    assert arguments.input == imgIn

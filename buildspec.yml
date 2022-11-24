@@ -14,7 +14,7 @@ phases:
       - echo Creating test user
       - . ./scripts/create_test_user.sh
       - echo Deploying parameter store for ICA testing
-      - . ./scripts/osetest_params_deploy.sh
+      - . ./scripts/nosetest_params_deploy.sh
       - echo Building the Docker image...
       - docker build . -t ica:latest --build-arg AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID --build-arg AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION 
       - echo getting AWS creds from SecretsManager # Only used in docker test not docker build

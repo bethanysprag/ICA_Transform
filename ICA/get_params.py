@@ -38,7 +38,7 @@ def set_env_variables_by_parameter(param_list):
 
 def main():
     """ gets list of parameters from store then sets env variables """
-    param_list = get_param_list(param='/ica_variables/ecs/test/')
+    param_list = get_param_list(param='/ica_variables/ecs/testing/')
     status = set_env_variables_by_parameter(param_list)
     return status
 

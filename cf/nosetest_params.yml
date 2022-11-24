@@ -41,12 +41,12 @@ Resources:
     Properties: 
       Description: parameters for ica testing
       Name: '/ica/testing/variables/infile'
-      Value: infile
+      Value: '/work/Data/ica_input.tif'
       Type: String
   ParameterStoreVar8d:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
       Name: '/ica/testing/variables/outfile'
-      Value: '/work/Data/ica_output.tif'
+      Value: '/work/ICA/testing/ica_output.tif'
       Type: String

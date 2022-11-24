@@ -1,19 +1,14 @@
 import os
 import main
 import boto3
-
-# set these from the parameter store
-imgOut = 'test/testImage_ica.tif'
-inKey = 'test/testImage.tif'
-outKey = 'test/result1.tif'
-inBucket = '195614500004-ica-testing'
-outBucket = '195614500004-ica-testing'
-infile = '/work/Data/ica_input.tif'
-outfile = '/work/Data/ica_output.tif'
-ot = 'float16'
+import get_params
 
 
 def test_download_file():
+    get_params.main()
+    inKey = os.environ['inKey']
+    inBucket = os.environ['inBucket']
+    infile = os.environ['infile']
     if os.path.exists(infile):
         os.remove(infile)
     status = main.download_file(inBucket,inKey,infile)
@@ -22,16 +17,33 @@ def test_download_file():
 
 
 def test_upload_results():
+    get_params.main()
+    outKey = os.environ['outKey']
+    inBucket = os.environ['inBucket']
+    outBucket = os.environ['outBucket']
+    outfile = os.environ['outfile']
+    main.download_file(inBucket,outKey,outfile)
     status = main.upload_results(outfile,outBucket,outKey=outKey)
     assert status == True
 
 
 def test_upload_results_noOutKey():
+    get_params.main()
+    outKey = os.environ['outKey']
+    inBucket = os.environ['inBucket']
+    outBucket = os.environ['outBucket']
+    outfile = os.environ['outfile']
+    main.download_file(inBucket,outKey,outfile)
     status = main.upload_results(outfile,outBucket)
     assert status == True
     
 
 def test_main():
+    get_params.main()
+    inKey = os.environ['inKey']
+    outKey = os.environ['outKey']
+    inBucket = os.environ['inBucket']
+    outBucket = os.environ['outBucket']
     status = main.main(inBucket,inKey,outBucket=outBucket,outKey=outKey)
     assert status == True
 

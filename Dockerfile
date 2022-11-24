@@ -18,4 +18,5 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 RUN pip3 install -r requirements-dev.txt
 COPY . /work
+RUN mkdir /work/Data
 CMD /bin/bash

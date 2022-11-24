@@ -3,7 +3,7 @@ import os
 import json
 import logging
 
-def get_param_list(param='/ica_variables/ecs/test/'):
+def get_param_list(param='/ica_variables/testing/'):
     """ retrieves env variables for testing that have been stored in the parameter store 
         as a list of dictionaries with the format {'parameter name':'parameter value'}
     """

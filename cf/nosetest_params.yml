@@ -1,59 +1,59 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Creating Parameter Store for environmental variables
 Resources:
-  ParameterStoreVa1:
+  ParameterStoreVa1b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/inBucket'
+      Name: '/ica_variables/ecs/testing/inBucket'
       Value: '195614500004-ica-testing'
       Type: String
-  ParameterStoreVar2:
+  ParameterStoreVar2b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/outBucket'
+      Name: '/ica_variables/ecs/testing/outBucket'
       Value: '195614500004-ica-testing'
       Type: String
-  ParameterStoreVar3:
+  ParameterStoreVar3b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/imgOut'
+      Name: '/ica_variables/ecs/testing/imgOut'
       Value: 'test/testImage_ica.tif'
       Type: String
-  ParameterStoreVar4:
+  ParameterStoreVar4b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/inKey'
+      Name: '/ica_variables/ecs/testing/inKey'
       Value: 'test/testImage.tif'
       Type: String
-  ParameterStoreVar5:
+  ParameterStoreVar5b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/outKey'
+      Name: '/ica_variables/ecs/testing/outKey'
       Value: 'test/result1.tif'
       Type: String
-  ParameterStoreVar6:
+  ParameterStoreVar6b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/inBucket'
+      Name: '/ica_variables/ecs/testing/inBucket'
       Value: '195614500004-ica-testing'
       Type: String
-  ParameterStoreVar7:
+  ParameterStoreVar7b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/infile'
+      Name: '/ica_variables/ecs/testing/infile'
       Value: infile
       Type: String
-  ParameterStoreVar8:
+  ParameterStoreVar8b:
     Type: "AWS::SSM::Parameter"
     Properties: 
       Description: parameters for ica testing
-      Name: '/ica_variables/ecs/test/outfile'
+      Name: '/ica_variables/ecs/testing/outfile'
       Value: '/work/Data/ica_output.tif'
       Type: String

@@ -3,8 +3,10 @@ ARG AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 FROM ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/ubuntu_focal
 MAINTAINER 'Bethany Sprague bethanysprag@gmail.com'
 ENV DEBIAN_FRONTEND='noninteractive'
-ARG AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+ARG AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID # requires setting twice since setting prior to FROM only makes available up to that point
 ARG AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+ENV AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+ENV AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
 WORKDIR /work
 RUN apt-get update && \
     apt-get install -qy libwxgtk3.0-gtk3-dev libtiff5-dev libgdal-dev libproj-dev  \
